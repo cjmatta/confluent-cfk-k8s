@@ -1,0 +1,25 @@
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: wikipedia-sse-source
+  namespace: confluent
+spec:
+  name: wikipedia-sse-source
+  taskMax: 1
+  connectClusterRef:
+    name: connect
+  class: com.github.cjmatta.kafka.connect.sse.ServerSentEventsSourceConnector
+  configs:
+    sse.uri: https://stream.wikimedia.org/v2/stream/recentchange
+    topic: wikipedia
+    transforms: extractData, parseJSON
+    transforms.extractData.type: org.apache.kafka.connect.transforms.ExtractField$Value
+    transforms.extractData.field: data
+    transforms.parseJSON.type: com.github.jcustenborder.kafka.connect.json.FromJson$Value
+    transforms.parseJSON.json.exclude.locations: "#/properties/log_params,#/properties/$schema,#/$schema"
+    transforms.parseJSON.json.schema.location: "Url"
+    transforms.parseJSON.json.schema.url: "https://raw.githubusercontent.com/wikimedia/mediawiki-event-schemas/master/jsonschema/mediawiki/recentchange/1.0.0.json"
+    transforms.parseJSON.json.schema.validation.enabled: "false"
+    producer.override.compression.type: "lz4"
+    producer.override.linger.ms: "10"
