@@ -8,7 +8,7 @@ then:
 ```
 terraform init
 terraform plan -out myoutput.out
-terraform apply
+terraform apply 'myoutput.out'
 ```
 
 add EKS k8s context for kubectl:
@@ -18,6 +18,10 @@ aws eks update-kubeconfig --name <name of context>
 
 
 ## Confluent for Kubernetes
+The machine this next section is run on requires:
+* Helm
+* Kubectl 
+
 Once the cluster is up and ready install Confluent for Kubernetes:
 
 ```
